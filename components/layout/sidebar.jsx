@@ -2,32 +2,44 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   LayoutDashboard,
   Package,
   FolderTree,
   Warehouse,
   BarChart3,
-  Activity,
   User,
   Users,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   ShoppingCart,
-  Building2,
   ScrollText,
   Bell,
-  AlertTriangle,
   FileText,
   Settings,
   Loader2,
+  Tag,
+  Layers,
+  Search,
+  Link2,
+  Boxes,
+  FileSpreadsheet,
+  Receipt,
+  Ticket,
+  Contact,
+  UsersRound,
+  MapPin,
+  Star,
+  Heart,
+  ListOrdered,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BrandLogo } from "@/components/shared/brand-logo";
-import { SIDEBAR_ITEMS } from "@/utils/constants";
+import { SIDEBAR_GROUPS } from "@/utils/constants";
 import { useAuth } from "@/context/AuthContext";
 
 const iconMap = {
@@ -36,27 +48,69 @@ const iconMap = {
   FolderTree,
   Warehouse,
   BarChart3,
-  Activity,
   User,
   Users,
-  ShieldCheck: LayoutDashboard,
   ShoppingCart,
-  Building2,
   ScrollText,
   Bell,
-  AlertTriangle,
   FileText,
   Settings,
+  Tag,
+  Layers,
+  Search,
+  Link2,
+  Boxes,
+  FileSpreadsheet,
+  Receipt,
+  Ticket,
+  Contact,
+  UsersRound,
+  MapPin,
+  Star,
+  Heart,
+  ListOrdered,
 };
 
-const MAIN_HREFS = ["/dashboard", "/dashboard/products", "/dashboard/categories", "/dashboard/orders", "/dashboard/inventory", "/dashboard/analytics", "/dashboard/reports"];
-const isMain = (href) => MAIN_HREFS.some((h) => href === h || (h !== "/dashboard" && href.startsWith(h)));
+function groupHasActivePath(items, pathname) {
+  return items.some(
+    (item) =>
+      pathname === item.href ||
+      (item.href !== "/dashboard" && pathname.startsWith(item.href))
+  );
+}
 
 export function Sidebar({ collapsed, onToggle, className }) {
   const pathname = usePathname();
   const router = useRouter();
   const [navigatingTo, setNavigatingTo] = useState(null);
   const { hasRole, user } = useAuth();
+
+  const groups = useMemo(() => {
+    return SIDEBAR_GROUPS.map((g) => ({
+      ...g,
+      items: g.items.filter(
+        (item) => !item.requiredRoles || hasRole(item.requiredRoles)
+      ),
+    })).filter((g) => g.items.length > 0);
+  }, [hasRole]);
+
+  const [openGroups, setOpenGroups] = useState(() => {
+    const init = {};
+    SIDEBAR_GROUPS.forEach((g) => {
+      init[g.id] = g.defaultOpen !== false;
+    });
+    return init;
+  });
+
+  useEffect(() => {
+    setOpenGroups((prev) => {
+      const next = { ...prev };
+      groups.forEach((g) => {
+        if (groupHasActivePath(g.items, pathname)) next[g.id] = true;
+      });
+      return next;
+    });
+  }, [pathname, groups]);
 
   useEffect(() => {
     setNavigatingTo(null);
@@ -72,18 +126,48 @@ export function Sidebar({ collapsed, onToggle, className }) {
     router.push(href);
   };
 
-  const items = SIDEBAR_ITEMS.filter(
-    (item) => !item.requiredRoles || hasRole(item.requiredRoles)
+  const flatItems = useMemo(
+    () => groups.flatMap((g) => g.items),
+    [groups]
   );
-  const mainItems = items.filter((item) => isMain(item.href));
-  const moreItems = items.filter((item) => !isMain(item.href));
 
-  const initials = user?.name
-    ?.split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2) || "U";
+  const initials =
+    user?.name
+      ?.split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2) || "U";
+
+  const renderLink = (item) => {
+    const Icon = iconMap[item.icon] || LayoutDashboard;
+    const isActive =
+      pathname === item.href ||
+      (item.href !== "/dashboard" && pathname.startsWith(item.href));
+    const loading = navigatingTo === item.href;
+    return (
+      <Link
+        key={item.href}
+        href={item.href}
+        onClick={(e) => handleNavClick(e, item.href)}
+        className={cn(
+          "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+          collapsed ? "justify-center px-2 py-2.5" : "",
+          isActive
+            ? "bg-primary text-primary-foreground"
+            : "text-sidebar-foreground hover:bg-muted"
+        )}
+        title={collapsed ? item.label : undefined}
+      >
+        {loading ? (
+          <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
+        ) : (
+          <Icon className="h-5 w-5 shrink-0" />
+        )}
+        {!collapsed && <span className="flex-1 truncate">{item.label}</span>}
+      </Link>
+    );
+  };
 
   return (
     <aside
@@ -93,113 +177,56 @@ export function Sidebar({ collapsed, onToggle, className }) {
         className
       )}
     >
-      {/* Dark gradient header with logo */}
-      <div className={cn("flex h-16 items-center bg-gradient-sidebar-header px-4", collapsed && "justify-center")}>
-        <Link href="/dashboard" className="flex items-center outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary">
-          <BrandLogo variant="sidebar" showName={!collapsed} size={collapsed ? "sm" : "md"} />
+      <div
+        className={cn(
+          "flex h-16 items-center bg-gradient-sidebar-header px-4",
+          collapsed && "justify-center"
+        )}
+      >
+        <Link
+          href="/dashboard"
+          className="flex items-center outline-none ring-offset-2 focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <BrandLogo
+            variant="sidebar"
+            showName={!collapsed}
+            size={collapsed ? "sm" : "md"}
+          />
         </Link>
       </div>
 
-      {/* White nav with MAIN / MORE */}
-      <nav className="flex-1 overflow-y-auto p-3">
-        {!collapsed && (
-          <>
-            <p className="mb-1.5 px-3 text-[10px] font-semibold uppercase tracking-wider text-sidebar-muted">
-              Main
-            </p>
-            <div className="space-y-0.5">
-              {mainItems.map((item) => {
-                const Icon = iconMap[item.icon] || LayoutDashboard;
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" && pathname.startsWith(item.href));
-                const loading = navigatingTo === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-sidebar-foreground hover:bg-muted"
-                    )}
-                  >
-                    {loading ? (
-                      <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
-                    ) : (
-                      <Icon className="h-5 w-5 shrink-0" />
-                    )}
-                    <span className="flex-1">{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-            <p className="mb-1.5 mt-4 px-3 text-[10px] font-semibold uppercase tracking-wider text-sidebar-muted">
-              More
-            </p>
-            <div className="space-y-0.5">
-              {moreItems.map((item) => {
-                const Icon = iconMap[item.icon] || LayoutDashboard;
-                const isActive =
-                  pathname === item.href ||
-                  (item.href !== "/dashboard" && pathname.startsWith(item.href));
-                const loading = navigatingTo === item.href;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item.href)}
-                    className={cn(
-                      "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
-                      isActive
-                        ? "bg-primary text-primary-foreground"
-                        : "text-sidebar-foreground hover:bg-muted"
-                    )}
-                  >
-                    {loading ? (
-                      <Loader2 className="h-5 w-5 shrink-0 animate-spin" />
-                    ) : (
-                      <Icon className="h-5 w-5 shrink-0" />
-                    )}
-                    <span className="flex-1">{item.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </>
-        )}
-        {collapsed && (
-          <div className="space-y-0.5">
-            {items.map((item) => {
-              const Icon = iconMap[item.icon] || LayoutDashboard;
-              const isActive =
-                pathname === item.href ||
-                (item.href !== "/dashboard" && pathname.startsWith(item.href));
-              const loading = navigatingTo === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={(e) => handleNavClick(e, item.href)}
-                  className={cn(
-                    "flex justify-center rounded-lg p-2.5 text-sm transition-colors",
-                    isActive
-                      ? "bg-primary text-primary-foreground"
-                      : "text-sidebar-foreground hover:bg-muted"
-                  )}
-                  title={item.label}
+      <nav className="flex-1 overflow-y-auto p-2">
+        {!collapsed &&
+          groups.map((group) => {
+            const isOpen = openGroups[group.id] !== false;
+            return (
+              <div key={group.id} className="mb-1">
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenGroups((p) => ({
+                      ...p,
+                      [group.id]: !isOpen,
+                    }))
+                  }
+                  className="mb-0.5 flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-left text-[10px] font-semibold uppercase tracking-wider text-sidebar-muted hover:bg-muted/60"
                 >
-                  {loading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Icon className="h-5 w-5" />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
+                  <ChevronDown
+                    className={cn(
+                      "h-3.5 w-3.5 shrink-0 transition-transform",
+                      !isOpen && "-rotate-90"
+                    )}
+                  />
+                  {group.label}
+                </button>
+                {isOpen && (
+                  <div className="space-y-0.5 pl-1">{group.items.map(renderLink)}</div>
+                )}
+              </div>
+            );
+          })}
+        {collapsed && (
+          <div className="space-y-0.5">{flatItems.map(renderLink)}</div>
         )}
       </nav>
 
