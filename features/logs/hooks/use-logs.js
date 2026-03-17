@@ -9,8 +9,13 @@ export function useLogs(params = {}) {
     queryFn: async () => {
       const res = await logsApi.list(params);
       const data = res?.data ?? res;
-      const list = data?.logs ?? data?.items ?? data ?? [];
-      return Array.isArray(list) ? list : [];
+      const list = data?.items ?? data?.logs ?? data ?? [];
+      return {
+        items: Array.isArray(list) ? list : [],
+        total: data?.total ?? 0,
+        page: data?.page ?? 1,
+        limit: data?.limit ?? 50,
+      };
     },
   });
 }

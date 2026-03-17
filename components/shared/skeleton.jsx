@@ -40,7 +40,7 @@ export function CardSkeleton() {
 
 export function ChartSkeleton() {
   return (
-    <div className="rounded-lg border border-border bg-card p-6">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
       <Skeleton className="mb-6 h-6 w-1/4" />
       <div className="flex h-[300px] items-end justify-between gap-2">
         {Array.from({ length: 6 }).map((_, i) => (
@@ -77,14 +77,18 @@ export function PageShimmer() {
   );
 }
 
-/** Shimmer for dashboard/overview (stat cards + chart placeholders). */
+/** Shimmer for dashboard/overview (hero + stat cards + chart placeholders). */
 export function DashboardShimmer() {
   return (
     <div className="space-y-8">
-      <Skeleton className="h-8 w-56" />
+      <div className="rounded-2xl bg-muted p-8">
+        <Skeleton className="mb-2 h-4 w-24" />
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="mt-2 h-5 w-40" />
+      </div>
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="rounded-lg border border-border bg-card p-6">
+          <div key={i} className="rounded-2xl border border-border bg-card p-6 shadow-card">
             <Skeleton className="mb-4 h-11 w-11 rounded-xl" />
             <Skeleton className="mb-2 h-4 w-24" />
             <Skeleton className="h-8 w-16" />

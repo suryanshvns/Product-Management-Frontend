@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { UserPlus, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 import {
   Card,
@@ -18,6 +18,7 @@ import {
 
 import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/shared/form-input';
+import { BrandLogo } from '@/components/shared/brand-logo';
 import { useToast } from '@/hooks/use-toast';
 import { post } from '@/lib/apiClient';
 
@@ -81,15 +82,13 @@ export function SignupView() {
   };
 
   return (
-    <Card className="border-border shadow-elevated">
-      <CardHeader className="space-y-1">
-        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <UserPlus className="h-6 w-6" />
+    <Card className="rounded-2xl border-border shadow-elevated">
+      <CardHeader className="space-y-3">
+        <BrandLogo variant="light" size="sm" className="justify-center" />
+        <div>
+          <CardTitle className="text-2xl">Create an account</CardTitle>
+          <CardDescription>Enter your details to get started with your account</CardDescription>
         </div>
-
-        <CardTitle className="text-2xl">Create an account</CardTitle>
-
-        <CardDescription>Enter your details to get started</CardDescription>
       </CardHeader>
 
       <CardContent>

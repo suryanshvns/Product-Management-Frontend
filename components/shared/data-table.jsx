@@ -23,12 +23,12 @@ export function DataTable({
   return (
     <div
       className={cn(
-        "overflow-auto rounded-xl border border-border bg-card",
+        "max-h-[calc(100vh-240px)] overflow-auto rounded-xl border border-border bg-card",
         className
       )}
     >
       <table className="w-full caption-bottom text-sm">
-        <thead>
+        <thead className="sticky top-0 z-10 bg-muted/95 backdrop-blur supports-[backdrop-filter]:bg-muted/80">
           <tr className="border-b border-border bg-muted/60">
             {columns.map((col) => (
               <th

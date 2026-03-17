@@ -204,6 +204,8 @@ export function OrdersList() {
               setPage(newPage);
             }}
             noDataComponent="No orders found."
+            fixedHeader
+            fixedHeaderScrollHeight="calc(100vh - 240px)"
             customStyles={{
               headRow: { style: { backgroundColor: "hsl(var(--muted))" } },
               headCells: { style: { paddingLeft: "1rem", paddingRight: "1rem" } },

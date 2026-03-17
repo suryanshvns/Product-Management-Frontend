@@ -9,6 +9,7 @@ import {
   ArrowDownRight,
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { DashboardShimmer } from '@/components/shared/skeleton';
 import { ErrorState } from '@/components/shared/error-state';
 import { formatNumber } from '@/lib/utils';
@@ -16,6 +17,8 @@ import { useAnalyticsOverview } from '../hooks/use-analytics';
 import { ProductsByCategoryChart } from './products-by-category-chart';
 import { InventoryDistributionChart } from './inventory-distribution-chart';
 import { ProductStatusChart } from './product-status-chart';
+import Link from 'next/link';
+import { ROUTES } from '@/utils/constants';
 
 const statCards = [
   {
@@ -23,10 +26,10 @@ const statCards = [
     key: 'productCount',
     icon: Package,
     value: 0,
-    trend: 20,
+    trend: 12.5,
     trendUp: true,
-    iconBg: 'bg-[#8B5CF6]/15',
-    iconColor: 'text-[#8B5CF6]',
+    iconBg: 'bg-blue-500/15',
+    iconColor: 'text-blue-600',
   },
   {
     title: 'Categories',
@@ -35,28 +38,28 @@ const statCards = [
     value: 0,
     trend: 8,
     trendUp: true,
-    iconBg: 'bg-[#3B82F6]/15',
-    iconColor: 'text-[#3B82F6]',
+    iconBg: 'bg-indigo-500/15',
+    iconColor: 'text-indigo-600',
   },
   {
-    title: 'Low Stock Items',
+    title: 'Low Stock',
     key: 'lowStockCount',
     icon: AlertTriangle,
     value: 0,
-    trend: 32,
-    trendUp: true,
-    iconBg: 'bg-[#0EA5E9]/15',
-    iconColor: 'text-[#0EA5E9]',
+    trend: 0.8,
+    trendUp: false,
+    iconBg: 'bg-red-500/15',
+    iconColor: 'text-red-600',
   },
   {
     title: 'Active Listings',
     key: 'active',
     icon: TrendingUp,
     value: 0,
-    trend: 3,
-    trendUp: false,
-    iconBg: 'bg-[#10B981]/15',
-    iconColor: 'text-[#10B981]',
+    trend: 21,
+    trendUp: true,
+    iconBg: 'bg-emerald-500/15',
+    iconColor: 'text-emerald-600',
   },
 ];
 
@@ -70,18 +73,52 @@ export function DashboardView() {
     productCount: data?.productCount ?? 0,
     categoryCount: data?.categoryCount ?? 0,
     lowStockCount: data?.lowStockCount ?? 0,
-    active: 0,
+    active: data?.productCount ?? 0,
   };
+
+  const greeting = (() => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 18) return 'Good afternoon';
+    return 'Good evening';
+  })();
 
   return (
     <div className="space-y-8">
-      <h1 className="text-xl font-semibold tracking-tight text-foreground">
-        Dashboard Overview
-      </h1>
+      {/* Welcome banner – blue gradient */}
+      <div className="overflow-hidden rounded-2xl bg-gradient-primary p-6 text-white shadow-card md:p-8">
+        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-xl font-semibold">
+              {greeting}, here&apos;s what&apos;s happening
+            </h2>
+            <p className="mt-1 text-sm opacity-95">
+              {stats.productCount} products · {stats.categoryCount} categories · {stats.lowStockCount} low stock
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-white/50 bg-transparent text-white hover:bg-white/20"
+              asChild
+            >
+              <Link href={ROUTES.ANALYTICS}>View analytics</Link>
+            </Button>
+            <Button
+              size="sm"
+              className="bg-white text-primary hover:bg-white/90"
+              asChild
+            >
+              <Link href={ROUTES.PRODUCTS}>New product</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
 
-      {/* KPI cards – white, rounded, icon + value + trend */}
+      {/* Metric cards – white, rounded, shadow */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {statCards.map(card => {
+        {statCards.map((card) => {
           const Icon = card.icon;
           const value = stats[card.key] ?? card.value;
           const trend = card.trend;
@@ -89,7 +126,7 @@ export function DashboardView() {
           return (
             <Card
               key={card.key}
-              className="border-border bg-card shadow-card hover:shadow-elevated transition-shadow"
+              className="overflow-hidden rounded-2xl border-border bg-card shadow-card transition-shadow hover:shadow-elevated"
             >
               <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-2">
                 <div
@@ -116,7 +153,7 @@ export function DashboardView() {
                   ) : (
                     <ArrowDownRight className="h-3.5 w-3.5" />
                   )}
-                  {trend}% than last month
+                  {trend}% from last month
                 </p>
               </CardContent>
             </Card>
@@ -124,7 +161,6 @@ export function DashboardView() {
         })}
       </div>
 
-      {/* Charts row */}
       <div className="grid gap-6 lg:grid-cols-2">
         <ProductsByCategoryChart />
         <InventoryDistributionChart />

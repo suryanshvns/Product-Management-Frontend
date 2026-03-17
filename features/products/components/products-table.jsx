@@ -33,6 +33,7 @@ import { useCategories } from "@/features/categories/hooks/use-categories";
 import { useDeleteProduct, useBulkDeleteProducts, useBulkUpdateProductStatus, useBulkImportProducts, useUploadProductImages, useDeleteProductImage } from "../hooks/use-products";
 import { useToast } from "@/hooks/use-toast";
 import { productsApi } from "@/lib/api";
+import { getProductImageUrl } from "@/lib/product-images";
 
 const DEBOUNCE_MS = 300;
 const statusVariant = { active: "success", draft: "secondary", archived: "outline" };
@@ -220,15 +221,33 @@ export function ProductsTable() {
   const columns = [
     {
       name: "Product",
-      cell: (row) => (
-        <div>
-          <p className="font-medium">{row.name ?? row.title ?? "—"}</p>
-          {row.sku && <p className="text-xs text-muted-foreground">{row.sku}</p>}
-        </div>
-      ),
+      cell: (row) => {
+        const imageUrl = getProductImageUrl(row);
+        return (
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 shrink-0 overflow-hidden rounded-lg border border-border bg-muted">
+              {imageUrl ? (
+                <img
+                  src={imageUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                  <Package className="h-5 w-5" />
+                </div>
+              )}
+            </div>
+            <div>
+              <p className="font-medium">{row.name ?? row.title ?? "—"}</p>
+              {row.sku && <p className="text-xs text-muted-foreground">{row.sku}</p>}
+            </div>
+          </div>
+        );
+      },
       sortable: false,
       style: { paddingLeft: "1rem", textAlign: "left" },
-      minWidth: "180px",
+      minWidth: "220px",
     },
     {
       name: "Category",
@@ -417,6 +436,8 @@ export function ProductsTable() {
               clearSelectedRows={clearSelected}
               onSelectedRowsChange={({ selectedRows: next }) => setSelectedRows(next)}
               noDataComponent="No products found."
+              fixedHeader
+              fixedHeaderScrollHeight="calc(100vh - 240px)"
               customStyles={{
                 headRow: { style: { backgroundColor: "hsl(var(--muted))" } },
                 headCells: { style: { paddingLeft: "1rem", paddingRight: "1rem" } },
@@ -474,14 +495,16 @@ export function ProductsTable() {
                   Product images
                 </h3>
                 <div className="flex flex-wrap gap-3">
-                  {(editProduct.images ?? editProduct.product?.images ?? editProduct.data?.product?.images ?? []).map((img) => (
+                  {(editProduct.images ?? editProduct.product?.images ?? editProduct.data?.product?.images ?? []).map((img) => {
+                    const src = img.imageUrl ?? img.url ?? img.src;
+                    return (
                     <div
                       key={img.id}
                       className="relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-lg border border-border bg-muted"
                     >
-                      {img.url || img.src ? (
+                      {src ? (
                         <img
-                          src={img.url ?? img.src}
+                          src={src}
                           alt={img.alt ?? "Product"}
                           className="h-full w-full object-cover"
                         />
@@ -514,7 +537,7 @@ export function ProductsTable() {
                         <X className="h-3 w-3" />
                       </Button>
                     </div>
-                  ))}
+                  ); })}
                 </div>
                 <label className="mt-3 flex cursor-pointer flex-col gap-1">
                   <span className="text-xs text-muted-foreground">Add images (JPG, PNG)</span>

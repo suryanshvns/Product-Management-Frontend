@@ -41,7 +41,7 @@ export function ProductStatusChart() {
   }
 
   return (
-    <Card className="bg-card shadow-card">
+    <Card className="rounded-2xl border-border bg-card shadow-card">
       <CardHeader>
         <CardTitle className="text-base font-semibold">Product status</CardTitle>
         <p className="text-sm text-muted-foreground">

@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartSkeleton } from '@/components/shared/skeleton';
 import { useAnalyticsInventoryStatus } from '../hooks/use-analytics';
 
-const COLORS = ['#10B981', '#EF4444', '#8B5CF6', '#0EA5E9'];
+const COLORS = ['#3b82f6', '#22c55e', '#ef4444', '#f59e0b'];
 
 export function InventoryDistributionChart() {
   const { data, isLoading } = useAnalyticsInventoryStatus();
@@ -26,7 +26,7 @@ export function InventoryDistributionChart() {
 
   if (isLoading) {
     return (
-      <Card className="bg-card shadow-card">
+      <Card className="rounded-2xl border-border bg-card shadow-card">
         <CardHeader>
           <CardTitle>Inventory distribution</CardTitle>
         </CardHeader>
@@ -39,7 +39,7 @@ export function InventoryDistributionChart() {
 
   if (!chartData.length) {
     return (
-      <Card className="bg-card shadow-card">
+      <Card className="rounded-2xl border-border bg-card shadow-card">
         <CardHeader>
           <CardTitle className="text-base font-semibold">
             Inventory distribution
@@ -58,7 +58,7 @@ export function InventoryDistributionChart() {
   }
 
   return (
-    <Card className="bg-card shadow-card">
+    <Card className="rounded-2xl border-border bg-card shadow-card">
       <CardHeader>
         <CardTitle className="text-base font-semibold">
           Inventory distribution

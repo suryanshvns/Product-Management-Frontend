@@ -13,7 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartSkeleton } from '@/components/shared/skeleton';
 import { useAnalyticsProductsByCategory } from '../hooks/use-analytics';
 
-const CHART_COLORS = { primary: '#8B5CF6' };
+const CHART_COLORS = ['#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'];
 
 export function ProductsByCategoryChart() {
   const { data: rawData, isLoading } = useAnalyticsProductsByCategory();
@@ -37,7 +37,7 @@ export function ProductsByCategoryChart() {
   }
 
   return (
-    <Card className="bg-card shadow-card">
+    <Card className="rounded-2xl border-border bg-card shadow-card">
       <CardHeader>
         <CardTitle className="text-base font-semibold">
           Products by category
@@ -79,8 +79,8 @@ export function ProductsByCategoryChart() {
               />
               <Bar
                 dataKey="count"
-                fill={CHART_COLORS.primary}
-                radius={[6, 6, 0, 0]}
+                fill={CHART_COLORS[0]}
+                radius={[8, 8, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>

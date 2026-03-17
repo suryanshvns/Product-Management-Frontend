@@ -181,6 +181,8 @@ export function UsersList() {
             onChangePage={handlePageChange}
             onChangeRowsPerPage={handlePerRowsChange}
             noDataComponent="No users found."
+            fixedHeader
+            fixedHeaderScrollHeight="calc(100vh - 240px)"
             customStyles={{
               headRow: { style: { backgroundColor: 'hsl(var(--muted))' } },
               headCells: {

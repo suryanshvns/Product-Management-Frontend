@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { LayoutDashboard, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 import {
   Card,
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { FormInput } from '@/components/shared/form-input';
+import { BrandLogo } from '@/components/shared/brand-logo';
 import { useToast } from '@/hooks/use-toast';
 import { post, setAuthToken, setRefreshToken } from '@/lib/apiClient';
 import { useAuth } from '@/context/AuthContext';
@@ -82,15 +83,15 @@ export function LoginView() {
   };
 
   return (
-    <Card className="border-border shadow-elevated">
-      <CardHeader className="space-y-1">
-        <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <LayoutDashboard className="h-6 w-6" />
+    <Card className="rounded-2xl border-border shadow-elevated">
+      <CardHeader className="space-y-3">
+        <BrandLogo variant="light" size="sm" className="justify-center" />
+        <div>
+          <CardTitle className="text-2xl">Sign in</CardTitle>
+          <CardDescription>
+            Enter your credentials to access your account
+          </CardDescription>
         </div>
-        <CardTitle className="text-2xl">Sign in</CardTitle>
-        <CardDescription>
-          Enter your credentials to access the dashboard
-        </CardDescription>
       </CardHeader>
 
       <CardContent>

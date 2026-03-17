@@ -53,6 +53,8 @@ export function NotificationsList() {
             pagination
             paginationRowsPerPageOptions={[10, 20, 50]}
             noDataComponent="No notifications found."
+            fixedHeader
+            fixedHeaderScrollHeight="calc(100vh - 240px)"
             customStyles={{
               headRow: { style: { backgroundColor: "hsl(var(--muted))" } },
               headCells: { style: { paddingLeft: "1rem", paddingRight: "1rem" } },
